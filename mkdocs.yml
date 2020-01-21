@@ -6,5 +6,5 @@ theme:
   palette:
     primary: 'Deep Purple'
     accent: 'Green'
-repo_name: 'dodas-ts/demo_data_INFNCloud'
-repo_url: 'https://github.com/dodas-ts/demo_data_INFNCloud'
+repo_name: 'dciangot/demo_xrootd_auth'
+repo_url: 'https://github.com/dciangot/demo_xrootd_auth'
