@@ -522,7 +522,7 @@ Infatti un token IAM puo' essere "tradotto" in una identita' X509 da un servizio
 <h4 id="accesso-rw-a-livello-di-singoli-utenti">Accesso RW a livello di singoli utenti</h4>
 <p>Sulla <code>remote-vm</code> facciamo partire il processo xrootd e controlliamo i log</p>
 <pre><code class="bash">service xrootd@X509vo stop
-service xrootd@X509map start
+service xrootd-privileged@X509map start
 cat /var/log/xrootd/X509map/xrootd.log
 </code></pre>
 
@@ -532,7 +532,7 @@ xrdcp data/test.txt root://90.147.174.89//tizio/test.txt
 xrdcp data/test.txt root://90.147.174.89//caio/test.txt
 </code></pre>
 
-<p>Sulla <code>remote-vm</code> verifichiamo che i file siano a destinazione e copiamo un file nel namespace atlas per provare poi a leggerlo da remoto</p>
+<p>Sulla <code>remote-vm</code> verifichiamo che i file siano a destinazione e copiamo un file nel namespace caio per provare poi a leggerlo da remoto</p>
 <pre><code class="bash">ls -l /data/user/
 # Con il comando precedente abbiamo controllato che le 2 cartelle
 # appartengono a 2 user distinti
@@ -550,6 +550,38 @@ xrdcp root://90.147.174.89//caio/test.txt test_caio.txt
 <h2 id="http">HTTP</h2>
 <h3 id="demo-3">Demo 3</h3>
 <h4 id="accesso-rw-a-livello-di-gruppo-utenti-vo-like_1">Accesso RW a livello di gruppo utenti (VO-like)</h4>
+<p>Sulla <code>remote-vm</code> facciamo partire il processo xrootd e controlliamo i log</p>
+<pre><code class="bash">service xrootd@X509map stop
+service xrootd-privileged@tokens start
+cat /var/log/xrootd/tokens/xrootd.log
+</code></pre>
+
+<p>Sulla <code>client-vm</code> proviamo a copiare un file</p>
+<pre><code class="bash"># Retrieve the token with
+source scripts/get_token.sh
+export TOKEN=...
+export HEADER=&quot;Authorization: Bearer ${TOKEN}&quot;
+# get the files with 
+curl  -k -XPUT -H &quot;$HEADER&quot; https://90.147.174.89:8443//votest/test.txt --data-urlencode @data/test.txt
+curl  -k -XPUT -H &quot;$HEADER&quot; https://90.147.174.89:8443//votest2/test.txt --data-urlencode @data/test.txt
+</code></pre>
+
+<p>Sulla <code>remote-vm</code> verifichiamo che i file siano a destinazione e copiamo un file nel namespace atlas per provare poi a leggerlo da remoto</p>
+<pre><code class="bash">ls -l /data/http/
+# Con il comando precedente abbiamo controllato che le 2 cartelle
+# appartengono a 2 user distinti
+ls /data/http/votest/
+ls /data/http/votest2/
+cp data/test.txt /data/http/votest2/
+chown -R votest2: /data/http/votest2/
+# Limit read to votest2 only
+chmod -R 700 /data/http/votest2/
+</code></pre>
+
+<p>Sulla <code>client-vm</code> proviamo a leggere i file appena inseriti</p>
+<pre><code class="bash">curl  -k -XGET -H &quot;$HEADER&quot; https://90.147.174.89:8443//votest/test.txt
+curl  -k -XGET -H &quot;$HEADER&quot; https://90.147.174.89:8443//votest2/test.txt
+</code></pre>
                 
                   
                 
