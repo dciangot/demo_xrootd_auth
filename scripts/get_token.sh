@@ -131,18 +131,9 @@ while true; do
   echo
   echo "The following command will set it in the IAM_ACCESS_TOKEN env variable:"
   echo
-  echo "export IAM_ACCESS_TOKEN=\"${access_token}\""
+  echo "export TOKEN=\"${access_token}\""
   echo
   echo "${response}"
-
-  sed -e "s/token_template/${access_token}/" auth_XDC_base.dat > auth_XDC.dat
-
-  if [[ "${refresh_token}" != "null" ]]; then
-    echo "A refresh token was issued. The following command will set it in the IAM_REFRESH_TOKEN env variable:"
-    echo
-    echo "export IAM_REFRESH_TOKEN=\"${refresh_token}\""
-    echo
-  fi
 
   exit 0
 

@@ -49,6 +49,9 @@ chown -R xrootd:xrootd /data/x509/atlas \
 
 chown -R votest: /data/http/votest/
 chown -R votest2: /data/http/votest2/
+chmod -R 700 /data/http/votest2/
+chmod -R 700 /data/http/votest/
+
 chown -R tizio: /data/user/tizio
 chown -R caio: /data/user/caio
 
