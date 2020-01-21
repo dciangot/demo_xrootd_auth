@@ -4,7 +4,7 @@ theme:
   logo:
     icon: cloud_circle
   palette:
-    primary: 'Deep Purple'
-    accent: 'Green'
+    primary: 'Light Blue'
+    accent: 'Dark Blue'
 repo_name: 'dciangot/demo_xrootd_auth'
 repo_url: 'https://github.com/dciangot/demo_xrootd_auth'

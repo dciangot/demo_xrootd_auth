@@ -53,7 +53,7 @@ Sulla `remote-vm` facciamo partire il processo xrootd e controlliamo i log
 
 ```bash
 service xrootd@X509vo stop
-service xrootd@X509map start
+service xrootd-privileged@X509map start
 cat /var/log/xrootd/X509map/xrootd.log
 ```
 
@@ -65,7 +65,7 @@ xrdcp data/test.txt root://90.147.174.89//tizio/test.txt
 xrdcp data/test.txt root://90.147.174.89//caio/test.txt
 ```
 
-Sulla `remote-vm` verifichiamo che i file siano a destinazione e copiamo un file nel namespace atlas per provare poi a leggerlo da remoto
+Sulla `remote-vm` verifichiamo che i file siano a destinazione e copiamo un file nel namespace caio per provare poi a leggerlo da remoto
 
 ```bash
 ls -l /data/user/
@@ -90,3 +90,43 @@ xrdcp root://90.147.174.89//caio/test.txt test_caio.txt
 ### Demo 3
 #### Accesso RW a livello di gruppo utenti (VO-like)
 
+Sulla `remote-vm` facciamo partire il processo xrootd e controlliamo i log
+
+```bash
+service xrootd@X509map stop
+service xrootd-privileged@tokens start
+cat /var/log/xrootd/tokens/xrootd.log
+```
+
+Sulla `client-vm` proviamo a copiare un file
+
+```bash
+# Retrieve the token with
+source scripts/get_token.sh
+export TOKEN=...
+export HEADER="Authorization: Bearer ${TOKEN}"
+# get the files with 
+curl  -k -XPUT -H "$HEADER" https://90.147.174.89:8443//votest/test.txt --data-urlencode @data/test.txt
+curl  -k -XPUT -H "$HEADER" https://90.147.174.89:8443//votest2/test.txt --data-urlencode @data/test.txt
+```
+
+Sulla `remote-vm` verifichiamo che i file siano a destinazione e copiamo un file nel namespace atlas per provare poi a leggerlo da remoto
+
+```bash
+ls -l /data/http/
+# Con il comando precedente abbiamo controllato che le 2 cartelle
+# appartengono a 2 user distinti
+ls /data/http/votest/
+ls /data/http/votest2/
+cp data/test.txt /data/http/votest2/
+chown -R votest2: /data/http/votest2/
+# Limit read to votest2 only
+chmod -R 700 /data/http/votest2/
+```
+
+Sulla `client-vm` proviamo a leggere i file appena inseriti
+
+```bash
+curl  -k -XGET -H "$HEADER" https://90.147.174.89:8443//votest/test.txt
+curl  -k -XGET -H "$HEADER" https://90.147.174.89:8443//votest2/test.txt
+```
