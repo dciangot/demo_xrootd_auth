@@ -55,8 +55,11 @@ chmod -R 700 /data/http/votest/
 chown -R tizio: /data/user/tizio
 chown -R caio: /data/user/caio
 
+cd -
+
 for dir in `ls config/`; do
     for file in `ls config/$dir`; do
         cp config/$dir/$file /etc/xrootd/$file
         chown xrootd:xrootd /etc/xrootd/$file
+    done
 done
