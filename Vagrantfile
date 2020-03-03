@@ -20,6 +20,12 @@ Vagrant.configure(2) do |config|
   # See https://github.com/hashicorp/vagrant/issues/5005
   config.ssh.insert_key = false
 
-  config.vm.provision "shell", path: "scripts/prepare.sh"
+  #config.vm.provision "shell", path: "scripts/prepare.sh"
+  config.vm.provision "shell", path: "scripts/prepare_escape.sh"
+
+  #config.vm.provision "file", source: "config/xrootd-escape/xrootd-escape.cfg", destination: "/tmp/xrootd-escape.cfg"
+
+  #config.vm.provision "shell",
+  #  inline: "sudo cp /tmp/xrootd-escape.cfg /etc/xrootd/"
 
 end
